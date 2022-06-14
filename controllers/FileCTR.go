@@ -12,8 +12,10 @@ import (
 	"time"
 )
 
-const ADDRESS = "http://10.180.139.161:8080/"
-const FF = "/Users/mac/go/tools/ffmpeg"
+const ADDRESS = "http://110.40.190.123:8080/"
+
+//const FF = "/Users/mac/go/tools/ffmpeg"
+const FF = "ffmpeg"
 
 type FileCTR struct {
 	beego.Controller
@@ -31,11 +33,11 @@ func (ctr FileCTR) Upload() {
 		filename = split[len(split)-1]
 	}
 	ss := strconv.FormatInt(time.Now().UnixNano(), 10)
-	filename = ss + filename
+	filename = ss + filename[strings.LastIndex(filename, "."):]
 	pigName := ss + ".jpg"
 	ctr.SaveToFile("data", "static/video/"+filename)
-	c := exec.Command(FF, "-i", "static/video/"+filename,
-		"-ss", "1", "-f", "image2", "'-frames:v 1'", "static/img/"+pigName)
+	c := exec.Command(FF, "-ss", "00:00:05", "-i", "static/video/"+filename,
+		"-q:v", "2", "-vsync", "0", "static/img/"+pigName)
 	c.Stderr = os.Stderr
 	c.Run()
 	UpMap["status_code"] = "200"
